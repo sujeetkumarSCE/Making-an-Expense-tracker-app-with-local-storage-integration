@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        #header {
+            text-align: center;
+            margin-top: 50px;
+            padding: 10px;
+            background-color: #343a40;
+            color: #ffffff;
+        }
+
+        #formContainer {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .inputGroup {
+            margin: 0 10px;
+        }
+
+        #expensesList {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .expenseItem {
+            background-color: #f8d7da;
+            margin-bottom: 10px;
+            padding: 10px;
+            width: 300px;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+<div id="header">
+    <h1>Expense Tracker</h1>
+</div>
+
+<div id="formContainer">
+    <div class="inputGroup">
+        <label for="expenseName">Expense Name</label>
+        <input type="text" id="expenseName">
+    </div>
+    <div class="inputGroup">
+        <label for="expenseAmount">Amount</label>
+        <input type="number" id="expenseAmount">
+    </div>
+    <button onclick="addExpense()">Add Expense</button>
+</div>
+
+<div id="expensesList">
+    <!-- Expenses will be displayed here -->
+</div>
+
+<script>
+    // Function to add expense
+    function addExpense() {
+        const expenseName = document.getElementById('expenseName').value;
+        const expenseAmount = document.getElementById('expenseAmount').value;
+
+        if (expenseName && expenseAmount) {
+            const expense = {
+                name: expenseName,
+                amount: parseFloat(expenseAmount),
+            };
+
+            // Retrieve existing expenses from local storage
+            let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+
+            // Add the new expense
+            expenses.push(expense);
+
+            // Save the updated expenses to local storage
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+
+            // Clear input fields
+            document.getElementById('expenseName').value = '';
+            document.getElementById('expenseAmount').value = '';
+
+            // Update the displayed expenses
+            displayExpenses();
+        } else {
+            alert('Please enter both expense name and amount.');
+        }
+    }
+
+    // Function to display expenses
+    function displayExpenses() {
+        const expensesList = document.getElementById('expensesList');
+        expensesList.innerHTML = '';
+
+        // Retrieve expenses from local storage
+        const expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+
+        // Display each expense
+        expenses.forEach((expense, index) => {
+            const expenseItem = document.createElement('div');
+            expenseItem.className = 'expenseItem';
+            expenseItem.innerHTML = `
+                <span>${expense.name}</span>
+                <span>$${expense.amount.toFixed(2)}</span>
+                <button onclick="deleteExpense(${index})">Delete</button>
+            `;
+            expensesList.appendChild(expenseItem);
+        });
+    }
+
+    // Function to delete expense
+    function deleteExpense(index) {
+        // Retrieve expenses from local storage
+        let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+
+        // Remove the selected expense
+        expenses.splice(index, 1);
+
+        // Save the updated expenses to local storage
+        localStorage.setItem('expenses', JSON.stringify(expenses));
+
+        // Update the displayed expenses
+        displayExpenses();
+    }
+
+    // Initial display of expenses
+    displayExpenses();
+</script>
+
+</body>
+</html>
